@@ -57,6 +57,20 @@ async function run() {
 });
 
 
+
+// Get foods by donator email
+app.get('/myFoods', async (req, res) => {
+  const { email } = req.query; // ?email=user@example.com
+  try {
+    const result = await foodCollection.find({ donator_email: email }).toArray();
+    res.send(result);
+  } catch (err) {
+    res.status(500).send({ error: 'Could not fetch foods' });
+  }
+});
+
+
+
 // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     //console.log("Pinged your deployment. You successfully connected to MongoDB!");
