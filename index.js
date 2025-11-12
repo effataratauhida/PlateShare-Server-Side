@@ -43,6 +43,20 @@ async function run() {
       res.send(result);
     });
 
+   
+    // Get single food by id
+    app.get('/foodData/:id', async (req, res) => {
+  const { id } = req.params;
+  const ObjectId = require('mongodb').ObjectId;
+  try {
+    const food = await foodCollection.findOne({ _id: new ObjectId(id) });
+    res.send(food);
+  } catch (err) {
+    res.status(500).send({ error: 'Food not found' });
+  }
+});
+
+
 // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     //console.log("Pinged your deployment. You successfully connected to MongoDB!");
