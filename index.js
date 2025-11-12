@@ -71,6 +71,44 @@ app.get('/myFoods', async (req, res) => {
 
 
 
+// Update food data by donator
+const { ObjectId } = require('mongodb');
+
+app.put('/foodData/:id', async (req, res) => {
+  const { id } = req.params;
+  const updatedFood = req.body;
+
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).send({ error: 'Invalid ID format' });
+  }
+
+  try {
+    const result = await foodCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updatedFood }
+    );
+    res.send(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: 'Could not update food' });
+  }
+});
+
+// Delete food data by donator
+app.delete('/foodData/:id', async (req, res) => {
+  const { id } = req.params;
+  const ObjectId = require('mongodb').ObjectId;
+
+  try {
+    const result = await foodCollection.deleteOne({ _id: new ObjectId(id) });
+    res.send(result);
+  } catch (err) {
+    res.status(500).send({ error: 'Could not delete food' });
+  }
+});
+
+
+
 // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     //console.log("Pinged your deployment. You successfully connected to MongoDB!");
