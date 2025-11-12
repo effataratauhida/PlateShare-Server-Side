@@ -109,6 +109,70 @@ app.delete('/foodData/:id', async (req, res) => {
 
 
 
+// food request collection
+const foodRequestsCollection = db.collection('foodRequests');
+
+app.post('/foodRequests', async (req, res) => {
+  const requestData = req.body; 
+  try {
+    const result = await foodRequestsCollection.insertOne({
+      ...requestData,
+      status: 'pending'
+    });
+    res.send({ success: true, data: result });
+  } catch (err) {
+    res.status(500).send({ success: false, error: err.message });
+  }
+});
+
+
+
+// GET requests by foodId
+app.get('/foodRequests', async (req, res) => {
+  const { foodId } = req.query; 
+  try {
+    const requests = await foodRequestsCollection.find({ foodId }).toArray();
+    res.send(requests);
+  } catch (err) {
+    res.status(500).send({ error: 'Could not fetch requests' });
+  }
+});
+
+
+// PATCH request status
+app.patch('/foodRequests/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body; // accepted or rejected
+
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).send({ error: 'Invalid ID format' });
+  }
+
+  try {
+    const result = await foodRequestsCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { status } }
+    );
+
+    if (status === 'accepted') {
+      const request = await foodRequestsCollection.findOne({ _id: new ObjectId(id) });
+      await foodCollection.updateOne(
+        { _id: new ObjectId(request.foodId) },
+        { $set: { food_status: 'donated' } }
+      );
+    }
+
+    res.send(result);
+  } catch (err) {
+    res.status(500).send({ error: 'Could not update request' });
+  }
+});
+
+
+
+
+
+
 // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     //console.log("Pinged your deployment. You successfully connected to MongoDB!");
