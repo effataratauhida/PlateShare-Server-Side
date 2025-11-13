@@ -60,7 +60,7 @@ async function run() {
 
 // Get foods by donator email
 app.get('/myFoods', async (req, res) => {
-  const { email } = req.query; // ?email=user@example.com
+  const { email } = req.query; 
   try {
     const result = await foodCollection.find({ donator_email: email }).toArray();
     res.send(result);
@@ -209,5 +209,5 @@ app.get('/', (req, res) => {
 
 
 app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`)
+  //console.log(`Server is listening on port ${port}`)
 })
