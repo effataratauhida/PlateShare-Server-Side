@@ -127,6 +127,22 @@ app.post('/foodRequests', async (req, res) => {
 
 
 
+
+// Get food requests made by  user
+app.get('/myFoodRequests', async (req, res) => {
+  const { email } = req.query; 
+  try {
+    const query = email ? { requesterEmail: email } : {};
+    const result = await foodRequestsCollection.find(query).toArray();
+    res.send(result);
+  } catch (err) {
+    res.status(500).send({ error: 'Could not fetch user requests' });
+  }
+});
+
+
+
+
 // GET requests by foodId
 app.get('/foodRequests', async (req, res) => {
   const { foodId } = req.query; 
